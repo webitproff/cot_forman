@@ -83,6 +83,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		$db_forum_topics = Cot::$db->forum_topics;
 
 		// Display the items
+    (!isset($tpl) || empty($tpl)) && $tpl = 'forman.postlist';
 		$t = new XTemplate(cot_tplfile($tpl, 'plug'));
 
 		// Get pagination if necessary

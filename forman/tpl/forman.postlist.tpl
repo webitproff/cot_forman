@@ -20,6 +20,11 @@
 		</p>
 	</li>
 <!-- END: PAGE_ROW -->
+<!-- BEGIN: NONE -->
+	<li>
+		{PHP.L.None}
+	</li>
+<!-- END: NONE -->
 </ul>
 
 <!-- IF {PAGE_TOP_PAGINATION} -->
