@@ -68,7 +68,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		global $L;
 
 		/* === Hook === */
-		foreach (array_merge(cot_getextplugins('forman.first')) as $pl) {
+		foreach (array_merge(cot_getextplugins('postlist.first')) as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -126,7 +126,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		}
 
 		/* === Hook === */
-		foreach (cot_getextplugins('forman.query') as $pl) {
+		foreach (cot_getextplugins('postlist.query') as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -136,7 +136,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		$jj = 1;
 
 		/* === Hook - Part 1 === */
-		$extp = cot_getextplugins('forman.loop');
+		$extp = cot_getextplugins('postlist.loop');
 		/* ===== */
 
 		while ($row = $res->fetch()) {
@@ -269,7 +269,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 			$t->parse("MAIN.NONE");
 
 		/* === Hook === */
-		foreach (cot_getextplugins('forman.tags') as $pl) {
+		foreach (cot_getextplugins('postlist.tags') as $pl) {
 			include $pl;
 		}
 		/* ===== */
