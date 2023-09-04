@@ -46,21 +46,18 @@ require_once cot_incfile('forums', 'module');
 /**
  * Generates Post list widget
  * @param  string  $tpl        01. Template code
- * @param  integer $items      02. Number of items to show. 0 - all items
+ * @param  int     $items      02. Number of items to show. 0 - all items
  * @param  string  $order      03. Sorting order (SQL)
  * @param  string  $extra		   04. Custom selection filter (SQL)
- * @param  string  $mode       05. Category selection mode (single, array, white, black)
- * @param  string  $cats       06. Category (categories, semicolon separated)
- * @param  boolean $subs       07. Include subcategories TRUE/FALSE
- * @param  boolean $noself     08. Exclude the current page from the rowset for pages
- * @param  int     $offset     09. Exclude specified number of records starting from the beginning
- * @param  string  $pagination 10. Pagination parameter name for the URL, e.g. 'pld'. Make sure it does not conflict with other paginations
- * @param  string  $ajax_block 11. DOM block ID for ajax pagination
- * @param  string  $cache_name 12. Cache name
- * @param  string  $cache_ttl  13. Cache TTL
+ * @param  int     $group      05. Group posts by topics
+ * @param  int     $offset     06. Exclude specified number of records starting from the beginning
+ * @param  string  $pagination 07. Pagination parameter name for the URL, e.g. 'pld'. Make sure it does not conflict with other paginations
+ * @param  string  $ajax_block 08. DOM block ID for ajax pagination
+ * @param  string  $cache_name 09. Cache name
+ * @param  int     $cache_ttl  10. Cache TTL
  * @return string              Parsed HTML
  */
-function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra = '', $group = '0', $offset = '0', $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
+function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra = '', $group = 0, $offset = 0, $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
 
 	$cache_name = (!empty($cache_name)) ? str_replace(' ', '_', $cache_name) : '';
 
@@ -95,7 +92,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 			$d = 0;
 
 		// Compile items number
-		(!is_numeric($offset)) && $offset = 0;
+		(!ctype_digit($offset)) && $offset = 0;
 		$d = $d + $offset;
 		$sql_limit = ($items > 0) ? "LIMIT $d, $items" : "";
 
