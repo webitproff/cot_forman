@@ -141,8 +141,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 
 		while ($row = $res->fetch()) {
 
-			if (Cot::$cfg['plugin']['forman']['usertags'] == 1)
-				$t->assign(cot_generate_usertags($row, 'PAGE_ROW_USER_'));
+			(Cot::$cfg['plugin']['forman']['usertags'] == 1) && $t->assign(cot_generate_usertags($row, 'PAGE_ROW_USER_'));
 
 			$topic_title = Cot::$db->query("SELECT ft_title FROM $db_forum_topics WHERE ft_id = ? LIMIT 1", $row['fp_topicid'])->fetchColumn();
 			$post_author = htmlspecialchars($row['fp_postername']);
@@ -175,7 +174,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 			));
 
 			if ($row['fp_posterid'] > 0) {
-				$avatar_link = (Cot::$cfg['plugin']['forman']['usertags'] == 1) ? $row['fp_posterid'] : Cot::$db->query("SELECT user_avatar FROM " . Cot::$db->users . " WHERE user_id = ?", $row['fp_posterid'])->fetchColumn();
+				$avatar_link = (Cot::$cfg['plugin']['forman']['usertags'] == 1) ? $row['user_avatar'] : Cot::$db->query("SELECT user_avatar FROM " . Cot::$db->users . " WHERE user_id = ?", $row['fp_posterid'])->fetchColumn();
 				$t->assign(array(
 					'PAGE_ROW_AVATAR' => (empty($avatar_link)) ? cot_rc('forman_default_avatar') : cot_rc('forman_avatar', array('src' => $avatar_link, 'user' => $post_author, 'class' => 'img-fluid')),
 					'PAGE_ROW_AUTHOR' => cot_build_user($row['fp_posterid'], $post_author),
@@ -201,9 +200,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 
 		// Render pagination if needed
 		if (!empty($pagination)) {
-
 			$totalitems = Cot::$db->query("SELECT fp.* FROM $db_forum_posts AS fp $sql_cond")->rowCount();
-
 			$url_area = defined('COT_PLUG') ? 'plug' : Cot::$env['ext'];
 
 			if (defined('COT_LIST')) {
@@ -265,8 +262,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 			));
 		}
 
-		if ($jj==1)
-			$t->parse("MAIN.NONE");
+		($jj==1) && $t->parse("MAIN.NONE");
 
 		/* === Hook === */
 		foreach (cot_getextplugins('postlist.tags') as $pl) {
@@ -278,7 +274,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		$output = $t->text();
 
 		if (Cot::$cache && ($jj > 1) && empty($pagination) && !empty($cache_name) && !empty($cache_ttl) && ($cache_ttl > 0))
-		Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, (int)$cache_ttl);
+		  Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, (int)$cache_ttl);
 	}
 	return $output;
 }
