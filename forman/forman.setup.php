@@ -6,10 +6,10 @@ Name=Forum Lists Widgets
 Category=navigation-structure
 Description=Generates custom topics / posts lists
 Version=1.00b
-Date=2023-09-02
+Date=2023-09-06
 Author=Dmitri Beliavski
 Copyright=&copy; 2023 Seditio.By
-Notes=
+Notes=Functions for topic & post list widgets, linear forum, and forum stats.
 Auth_guests=R
 Lock_guests=W12345A
 Auth_members=R
@@ -24,8 +24,11 @@ encrypt_ajax_urls=02:radio::0:Encrypt ajax URLs
 encrypt_key=03:string::1234567890123456:Secret Key
 encrypt_iv=04:string::1234567890123456:Initialization Vector
 
-gentags=20:separator:::
-usertags=23:radio::0:Generate User tags
+gentags=10:separator:::
+usertags=11:radio::0:Generate User tags
+
+misc=20:separator:::
+flatview=21:radio::0:Flatview forums sections page
 [END_COT_EXT_CONFIG]
 ==================== */
 

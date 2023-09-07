@@ -6,9 +6,9 @@ Hooks=ajax
 ==================== */
 
 /**
-* Comlist Plugin / AJAX
+* Forman Plugin / AJAX for cot_postlist
 *
-* @package postlist
+* @package forman
 * @author Dmitri Beliavski
 * @copyright (c) 2023 seditio.by
 */
@@ -36,6 +36,7 @@ if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls'] == 1) {
   $ajax_block = $params[7];
   $cache_name = $params[8];
   $cache_ttl = $params[9];
+  $area = $params[10];
 }
 else {
   $tpl = cot_import('tpl','G','TXT');
@@ -48,9 +49,13 @@ else {
   $ajax_block = cot_import('ajax_block','G','TXT');
   $cache_name = cot_import('cache_name','G','TXT');
   $cache_ttl = cot_import('cache_ttl','G','INT');
+  $area = cot_import('area','G','TXT');
 }
 
 ob_clean();
-echo cot_postlist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+if ($area == 'topics')
+  echo cot_topiclist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+elseif ($area == 'posts')
+  echo cot_postlist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
 ob_flush();
 exit;

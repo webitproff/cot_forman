@@ -2,7 +2,7 @@
 <ul class="list-unstyled posts">
 <!-- BEGIN: PAGE_ROW -->
 	<li class="{PAGE_ROW_ODDEVEN} px-3 py-2">
-		<figure class="me-3 mb-0 float-start">
+		<figure class="me-3 mb-1 float-start">
 			{PAGE_ROW_AVATAR}
 		</figure>
 
@@ -29,7 +29,7 @@
 
 <!-- IF {PAGE_TOP_PAGINATION} -->
 <nav aria-label="Posts Pagination">
-	<ul class="pagination pagination-sm justify-content-left mb-0">
+	<ul class="pagination pagination-sm justify-content-center">
 		{PAGE_TOP_PAGEPREV}{PAGE_TOP_PAGINATION}{PAGE_TOP_PAGENEXT}
 	</ul>
 </nav>
