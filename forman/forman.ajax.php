@@ -23,7 +23,7 @@ foreach (array_merge(cot_getextplugins('forman.ajax.first')) as $pl) {
 
 if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls'] == 1) {
   $params = cot_import('h', 'G', 'TXT');
-  $params = cot_encrypt_decrypt('decrypt', $params, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
+  $params = sedby_encrypt_decrypt('decrypt', $params, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
   $params = explode(',', $params);
 
   $tpl = $params[0];
@@ -54,8 +54,8 @@ else {
 
 ob_clean();
 if ($area == 'topics')
-  echo cot_topiclist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+  echo sedby_topiclist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
 elseif ($area == 'posts')
-  echo cot_postlist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+  echo sedby_postlist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
 ob_flush();
 exit;

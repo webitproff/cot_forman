@@ -30,7 +30,7 @@ require_once cot_incfile('pagelist', 'plug', 'functions.extra');
  * @param  int     $cache_ttl  10. Cache TTL
  * @return string              Parsed HTML
  */
-function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extra = '', $group = 0, $offset = 0, $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
+function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extra = '', $group = 0, $offset = 0, $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
 
   $enableAjax = $enableCache = $enablePagination = false;
 
@@ -40,29 +40,27 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
     $cache_name = str_replace(' ', '_', $cache_name);
   }
 
- 	if ($enableCache && Cot::$cache->db->exists($cache_name, SEDBY_FORMAN_REALM))
- 		$output = Cot::$cache->db->get($cache_name, SEDBY_FORMAN_REALM);
- 	else {
+ 	if ($enableCache && Cot::$cache->db->exists($cache_name, SEDBY_FORMAN_REALM)) {
+    $output = Cot::$cache->db->get($cache_name, SEDBY_FORMAN_REALM);
+  } else {
 
     /* === Hook === */
-    foreach (array_merge(cot_getextplugins('topiclist.first')) as $pl) {
+    foreach (cot_getextplugins('topiclist.first') as $pl)
+    {
       include $pl;
     }
     /* ===== */
 
     // Condition shortcuts
-    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['forman']['ajax']) && !empty($ajax_block))
+    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['forman']['ajax']) && !empty($ajax_block)) {
       $enableAjax = true;
-
-    if (!empty($pagination) && ((int)$items > 0))
-      $enablePagination = true;
-
-    if ($enableAjax && Cot::$cfg['plugin']['forman']['encrypt_ajax_urls']) {
-      $h = $tpl . ',' . $items . ',' . $order . ',' . $extra . ',' . $group . ',' . $offset . ',' . $pagination . ',' . $ajax_block . ',' . $cache_name . ',' . $cache_ttl . ',topics';
-      $h = cot_encrypt_decrypt('encrypt', $h, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
-      $h = str_replace('=', '', $h);
     }
 
+    if (!empty($pagination) && ((int)$items > 0)) {
+      $enablePagination = true;
+    }
+
+    // DB tables shortcuts
     $db_forum_topics = Cot::$db->forum_topics;
 
     // Display the items
@@ -70,10 +68,12 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
     $t = new XTemplate(cot_tplfile($tpl, 'plug'));
 
     // Get pagination if necessary
-    if ($enablePagination)
+    if ($enablePagination) {
       list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
-    else
+    }
+    else {
       $d = 0;
+    }
 
     // Compile items number
     ((int)$offset <= 0) && $offset = 0;
@@ -89,20 +89,14 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
     // Compile extra SQL condition
     $sql_extra = (empty($extra)) ? "" : $extra;
 
-    if (!empty($sql_group) && !empty($sql_extra))
-      $sql_cond = "WHERE " . $sql_group . " AND " . $sql_extra;
-    elseif (!empty($sql_group) && empty($sql_extra))
-      $sql_cond = "WHERE " . $sql_group;
-    elseif (empty($sql_group) && !empty($sql_extra))
-      $sql_cond = "WHERE " . $sql_extra;
-    else
-      $sql_cond = "";
+    $sql_cond = sedby_twocond($sql_group, $sql_extra);
 
     $topiclist_join_columns = "";
     $topiclist_join_tables = "";
 
     /* === Hook === */
-		foreach (cot_getextplugins('topiclist.query') as $pl) {
+		foreach (cot_getextplugins('topiclist.query') as $pl)
+    {
 			include $pl;
 		}
 		/* ===== */
@@ -116,7 +110,6 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
     /* ===== */
 
     while ($row = $res->fetch()) {
-
       $row['ft_icon'] = 'posts';
       $row['ft_postisnew'] = FALSE;
       $row['ft_pages'] = '';
@@ -161,7 +154,9 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
       if ($row['ft_postcount'] > Cot::$cfg['forums']['maxpostsperpage'] && !$row['ft_movedto']) {
     		$pn_q = $row['ft_movedto'] > 0 ? $row['ft_movedto'] : $row['ft_id'];
     		$pn = cot_pagenav('forums', 'm=posts&q='.$pn_q, 0, $row['ft_postcount'], Cot::$cfg['forums']['maxpostsperpage'], 'd');
-            if (!isset($pn['first'])) $pn['first'] = '';
+        if (!isset($pn['first'])) {
+          $pn['first'] = '';
+        }
     		$row['ft_pages'] = cot_rc('forums_code_topic_pages', array('main' => $pn['main'], 'first' => $pn['first'], 'last' => $pn['last']));
     	}
 
@@ -240,25 +235,22 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
 		if ($enablePagination) {
 			$totalitems = Cot::$db->query("SELECT ft.* FROM $db_forum_topics AS ft $sql_cond")->rowCount();
 
-      if (defined('COT_ADMIN'))
-        $url_area = 'admin';
-      elseif (defined('COT_PLUG'))
-        $url_area = 'plug';
-      else
-        $url_area = Cot::$env['ext'];
-
-      $url_params = cot_geturlparams();
-      $url_params[$pagination] = $durl;
+      $url_area = sedby_geturlarea();
+			$url_params = sedby_geturlparams();
+			$url_params[$pagination] = $durl;
 
 			if ($enableAjax) {
 				$ajax_mode = true;
 				$ajax_plug = 'plug';
-				if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls'])
-					$ajax_plug_params = "r=forman&h=$h";
-				else
-					$ajax_plug_params = "r=forman&tpl=$tpl&items=$items&order=$order&extra=$extra&group=$group&offset=$offset&pagination=$pagination&ajax_block=$ajax_block&cache_name=$cache_name&cache_ttl=$cache_ttl&area=topics";
-			}
-			else {
+				if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls']) {
+          $h = $tpl . ',' . $items . ',' . $order . ',' . $extra . ',' . $group . ',' . $offset . ',' . $pagination . ',' . $ajax_block . ',' . $cache_name . ',' . $cache_ttl . ',topics';
+          $h = sedby_encrypt_decrypt('encrypt', $h, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
+          $h = str_replace('=', '', $h);
+          $ajax_plug_params = "r=forman&h=$h";
+        } else {
+          $ajax_plug_params = "r=forman&tpl=$tpl&items=$items&order=$order&extra=$extra&group=$group&offset=$offset&pagination=$pagination&ajax_block=$ajax_block&cache_name=$cache_name&cache_ttl=$cache_ttl&area=topics";
+        }
+			} else {
 				$ajax_mode = false;
 				$ajax_plug = $ajax_plug_params = '';
 			}
@@ -290,7 +282,8 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
     ($jj==1) && $t->parse("MAIN.NONE");
 
     /* === Hook === */
-    foreach (cot_getextplugins('topiclist.tags') as $pl) {
+    foreach (cot_getextplugins('topiclist.tags') as $pl)
+    {
       include $pl;
     }
     /* ===== */
@@ -298,8 +291,9 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
     $t->parse();
     $output = $t->text();
 
-    if (($jj > 1) && $enableCache && !$enablePagination)
+    if (($jj > 1) && $enableCache && !$enablePagination) {
       Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, $cache_ttl);
+    }
   }
   return $output;
 }
@@ -318,7 +312,7 @@ function cot_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $extr
  * @param  int     $cache_ttl  10. Cache TTL
  * @return string              Parsed HTML
  */
-function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra = '', $group = 0, $offset = 0, $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
+function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra = '', $group = 0, $offset = 0, $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
 
   $enableAjax = $enableCache = $enablePagination = false;
 
@@ -328,24 +322,27 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
     $cache_name = (!empty($cache_name)) ? str_replace(' ', '_', $cache_name) : '';
   }
 
-	if ($enableCache && Cot::$cache->db->exists($cache_name, SEDBY_FORMAN_REALM))
-		$output = Cot::$cache->db->get($cache_name, SEDBY_FORMAN_REALM);
-	else {
+	if ($enableCache && Cot::$cache->db->exists($cache_name, SEDBY_FORMAN_REALM)) {
+    $output = Cot::$cache->db->get($cache_name, SEDBY_FORMAN_REALM);
+  } else {
 
 		global $L;
 
     /* === Hook === */
-		foreach (array_merge(cot_getextplugins('postlist.first')) as $pl) {
+		foreach (cot_getextplugins('postlist.first') as $pl)
+    {
 			include $pl;
 		}
 		/* ===== */
 
     // Condition shortcuts
-    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['forman']['ajax']) && !empty($ajax_block))
+    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['forman']['ajax']) && !empty($ajax_block)) {
       $enableAjax = true;
+    }
 
-    if (!empty($pagination) && ((int)$items > 0))
+    if (!empty($pagination) && ((int)$items > 0)) {
       $enablePagination = true;
+    }
 
     // DB tables shortcuts
 		$db_forum_posts = Cot::$db->forum_posts;
@@ -355,11 +352,12 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
     (!isset($tpl) || empty($tpl)) && $tpl = 'forman.postlist';
 		$t = new XTemplate(cot_tplfile($tpl, 'plug'));
 
-		// Get pagination if necessary
-		if ($enablePagination)
-			list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
-		else
-			$d = 0;
+    // Get pagination if necessary
+		if ($enablePagination) {
+      list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
+    } else {
+      $d = 0;
+    }
 
 		// Compile items number
 		((int)($offset) <= 0) && $offset = 0;
@@ -375,14 +373,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		// Compile extra
 		$sql_extra = (empty($extra)) ? "" : $extra;
 
-		if (!empty($sql_group) && !empty($sql_extra))
-			$sql_cond = "WHERE " . $sql_group . " AND " . $sql_extra;
-		elseif (!empty($sql_group) && empty($sql_extra))
-			$sql_cond = "WHERE " . $sql_group;
-		elseif (empty($sql_group) && !empty($sql_extra))
-			$sql_cond = "WHERE " . $sql_extra;
-		else
-			$sql_cond = "";
+    $sql_cond = sedby_twocond($sql_group, $sql_extra);
 
 		$postlist_join_columns = "";
 		$postlist_join_tables = "";
@@ -395,7 +386,8 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		}
 
 		/* === Hook === */
-		foreach (cot_getextplugins('postlist.query') as $pl) {
+		foreach (cot_getextplugins('postlist.query') as $pl)
+    {
 			include $pl;
 		}
 		/* ===== */
@@ -409,7 +401,6 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		/* ===== */
 
 		while ($row = $res->fetch()) {
-
 			(Cot::$cfg['plugin']['forman']['usertags']) && $t->assign(cot_generate_usertags($row, 'PAGE_ROW_USER_'));
 
 			$topic_title = Cot::$db->query("SELECT ft_title FROM $db_forum_topics WHERE ft_id = ? LIMIT 1", $row['fp_topicid'])->fetchColumn();
@@ -448,8 +439,7 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 					'PAGE_ROW_AVATAR' => (empty($avatar_link)) ? cot_rc('forman_default_avatar') : cot_rc('forman_avatar', array('src' => $avatar_link, 'user' => $post_author)),
 					'PAGE_ROW_AUTHOR' => cot_build_user($row['fp_posterid'], $post_author),
 				));
-			}
-			else {
+			} else {
 				require_once cot_incfile('forman', 'plug', 'rc');
 				$t->assign(array(
 					'PAGE_ROW_AVATAR' => cot_rc('forman_default_avatar'),
@@ -471,29 +461,22 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		if ($enablePagination) {
 			$totalitems = Cot::$db->query("SELECT fp.* FROM $db_forum_posts AS fp $sql_cond")->rowCount();
 
-      if (defined('COT_ADMIN'))
-        $url_area = 'admin';
-      elseif (defined('COT_PLUG'))
-        $url_area = 'plug';
-      else
-        $url_area = Cot::$env['ext'];
-
-      $url_params = cot_geturlparams();
-      $url_params[$pagination] = $durl;
+      $url_area = sedby_geturlarea();
+			$url_params = sedby_geturlparams();
+			$url_params[$pagination] = $durl;
 
 			if ($enableAjax) {
 				$ajax_mode = true;
 				$ajax_plug = 'plug';
 				if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls']) {
           $h = $tpl . ',' . $items . ',' . $order . ',' . $extra . ',' . $group . ',' . $offset . ',' . $pagination . ',' . $ajax_block . ',' . $cache_name . ',' . $cache_ttl . ',posts';
-    			$h = cot_encrypt_decrypt('encrypt', $h, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
+    			$h = sedby_encrypt_decrypt('encrypt', $h, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
     			$h = str_replace('=', '', $h);
           $ajax_plug_params = "r=forman&h=$h";
+        } else {
+          $ajax_plug_params = "r=forman&tpl=$tpl&items=$items&order=$order&extra=$extra&group=$group&offset=$offset&pagination=$pagination&ajax_block=$ajax_block&cache_name=$cache_name&cache_ttl=$cache_ttl&area=posts";
         }
-				else
-					$ajax_plug_params = "r=forman&tpl=$tpl&items=$items&order=$order&extra=$extra&group=$group&offset=$offset&pagination=$pagination&ajax_block=$ajax_block&cache_name=$cache_name&cache_ttl=$cache_ttl&area=posts";
-			}
-			else {
+			} else {
 				$ajax_mode = false;
 				$ajax_plug = $ajax_plug_params = '';
 			}
@@ -525,7 +508,8 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		($jj==1) && $t->parse("MAIN.NONE");
 
 		/* === Hook === */
-		foreach (cot_getextplugins('postlist.tags') as $pl) {
+		foreach (cot_getextplugins('postlist.tags') as $pl)
+    {
 			include $pl;
 		}
 		/* ===== */
@@ -533,8 +517,9 @@ function cot_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extra 
 		$t->parse();
 		$output = $t->text();
 
-		if (($jj > 1) && $enableCache && !$enablePagination)
-		  Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, $cache_ttl);
+		if (($jj > 1) && $enableCache && !$enablePagination) {
+      Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, $cache_ttl);
+    }
 	}
 	return $output;
 }

@@ -16,7 +16,7 @@
 		<div class="row">
 			<div class="col">
 				<div id="topics2list">
-					{PHP|cot_topiclist('forman.topiclist', '0', '', '', '0', '0', '', '', 'topics2list', 0)}
+					{PHP|sedby_topiclist('forman.topiclist', '3', '', '', '0', '0', 'ftp', 'topics2list')}
 				</div>
 			</div>
 		</div>
