@@ -6,24 +6,19 @@
 			{PAGE_ROW_AVATAR}
 		</figure>
 
-		<p class="fw-bold lh-sm mb-1">
-			{PAGE_ROW_CRUMBS}
-		</p>
-
-		<div class="text small lh-sm mb-2">
-			{PAGE_ROW_TEXT_PLAIN|cot_cutstring($this, '160')}
-		</div>
-
-		<p class="text-end small mb-0">
-			{PAGE_ROW_POSTERNAME} @ {PAGE_ROW_UPDATED|cot_date('j F Y', $this)}{PAGE_ROW_UPDATE_STATUS}
-		</p>
+		<ul class="list-unstyled mb-0 overflow-hidden ">
+			<li class="fw-bold">
+				{PAGE_ROW_CRUMBS}
+			</li>
+			<li class="small mb-1 pb-2 border-bottom">
+				{PHP.L.forman_lastreply} {PAGE_ROW_POSTERNAME} @ {PAGE_ROW_UPDATED|cot_date('j F Y', $this)}{PAGE_ROW_UPDATE_STATUS}
+			</li>
+			<li class="overflow-hidden">
+				{PAGE_ROW_TEXT}
+			</li>
+		</ul>
 	</li>
 <!-- END: PAGE_ROW -->
-<!-- BEGIN: NONE -->
-	<li>
-		{PHP.L.None}
-	</li>
-<!-- END: NONE -->
 </ul>
 
 <!-- IF {PAGE_TOP_PAGINATION} -->

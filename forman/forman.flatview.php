@@ -15,6 +15,16 @@ Hooks=forums.sections.main
 
 defined('COT_CODE') or die('Wrong URL');
 
-(Cot::$cfg['plugin']['forman']['flatview']) && $t = new XTemplate(cot_tplfile('forman.flatview', 'plug'));
+include_once cot_langfile('forman');
+include_once cot_langfile('forums', 'module');
 
 Resources::linkFileFooter($cfg['plugins_dir'].'/forman/inc/forman.css', 'css');
+
+(Cot::$cfg['plugin']['forman']['flatview']) && $t = new XTemplate(cot_tplfile('forman.flatview', 'plug'));
+
+if ($a == 'recent') {
+  $t = new XTemplate(cot_tplfile('forman.recent', 'plug'));
+  $recentCrumbs[] = array(cot_url('forums'), Cot::$L['Forums']);
+  $recentCrumbs[] = Cot::$L['forman_recentposts'];
+  $t->assign('FORMAN_RECENT_BREADCRUMBS', cot_breadcrumbs($recentCrumbs, Cot::$cfg['homebreadcrumb']));
+}

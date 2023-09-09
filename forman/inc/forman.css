@@ -1,1 +1,7 @@
-div.block		{ margin-bottom: 1rem; padding: 1rem 2rem; background: #f1f1f1; }
+div.block		{ padding: 1rem 2rem; }
+
+ul.posts > li                                          { margin-bottom: .5rem; }
+  ul.posts > li:last-child                             { margin-bottom: 0; }
+  ul.posts > li > ul > li.overflow-hidden p:last-child { margin-bottom: 0; }
+
+div.progress.short    { height: 1.25rem; }

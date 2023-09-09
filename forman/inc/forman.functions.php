@@ -425,6 +425,8 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 				'PAGE_ROW_TOPICID'		=> $row['fp_topicid'],
 				'PAGE_ROW_CAT'				=> $row['fp_cat'],
 
+        'PAGE_ROW_CRUMBS'			=> cot_breadcrumbs(cot_forums_buildpath($row['fp_cat'], false), false, false),
+
         'PAGE_ROW_PREFIX'		  => $post_prefix,
 
         'PAGE_ROW_ID'					=> $row['fp_id'],

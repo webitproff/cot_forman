@@ -25,7 +25,7 @@
 					{PAGE_ROW_ICON}
 				</td>
 				<td class="align-middle">
-					<a href="{PAGE_ROW_URL}" class="fw-bold lh-sm mb-1 d-block">{PAGE_ROW_TITLE}</a>
+					<a href="{PAGE_ROW_URL}" class="fw-bold lh-sm d-block">{PAGE_ROW_TITLE}</a>
 <!-- IF {PAGE_ROW_DESC} -->
 					<p class="small mb-0">
 						{PAGE_ROW_DESC}

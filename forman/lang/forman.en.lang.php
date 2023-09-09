@@ -33,5 +33,7 @@ $L['info_notes'] = 'Functions for topic & post list widgets, linear forum, and f
  * Plugin Globals
  */
 
+$L['forman_lastreply'] = 'Last reply from';
 $L['forman_re'] = 'Re: ';
-$Ls['forman_posts'] = 'post,posts';
+$L['forman_posts'] = 'post,posts';
+$L['forman_recentposts'] = 'Recent posts';

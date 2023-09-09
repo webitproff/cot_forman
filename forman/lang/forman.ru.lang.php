@@ -33,5 +33,7 @@ $L['info_notes'] = 'Функции для создания виджетов сп
  * Plugin Globals
  */
 
-$L['forman_re'] = 'Re: ';
+$L['forman_lastreply'] = 'Последний ответ от';
 $L['forman_posts'] = 'пост,поста,постов';
+$L['forman_re'] = 'Re: ';
+$L['forman_recentposts'] = 'Последние посты';
