@@ -20,13 +20,13 @@
 				</div>
 			</div>
 			<div class="col-lg-4">
-				<div class="block mb-3 bg-light bg-gradient border rounded">
+				<div class="block mb-3 px-4 py-3 bg-light bg-gradient border rounded">
 					<span class="fw-bold fs-5 mb-2 d-block">Топ авторов</span>
 					<div id="top2list">
 						{PHP|sedby_forman_topusers('forman.topusers.short', '0', '', '', '0', '0', '', '')}
 					</div>
 				</div>
-				<div class="block bg-light bg-gradient border rounded">
+				<div class="block px-4 py-3 bg-light bg-gradient border rounded">
 					<span class="fw-bold fs-5 mb-2 d-block">Статистика форумов</span>
 					<ul class="list-unstyled mb-0">
 						<li>
