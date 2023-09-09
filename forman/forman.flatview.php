@@ -16,3 +16,5 @@ Hooks=forums.sections.main
 defined('COT_CODE') or die('Wrong URL');
 
 (Cot::$cfg['plugin']['forman']['flatview']) && $t = new XTemplate(cot_tplfile('forman.flatview', 'plug'));
+
+Resources::linkFileFooter($cfg['plugins_dir'].'/forman/inc/forman.css', 'css');
