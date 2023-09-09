@@ -50,12 +50,18 @@ else {
   $cache_name = cot_import('cache_name','G','TXT');
   $cache_ttl = cot_import('cache_ttl','G','INT');
   $area = cot_import('area','G','TXT');
+
+  $zerocount = cot_import('zerocount','G','INT');
+  ($zerocount) && $group = $zerocount;
 }
 
 ob_clean();
-if ($area == 'topics')
+if ($area == 'topics') {
   echo sedby_topiclist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
-elseif ($area == 'posts')
+} elseif ($area == 'posts') {
   echo sedby_postlist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+} elseif ($area == 'topusers') {
+  echo sedby_forman_topusers($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+}
 ob_flush();
 exit;

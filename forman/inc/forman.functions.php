@@ -326,7 +326,8 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
     $output = Cot::$cache->db->get($cache_name, SEDBY_FORMAN_REALM);
   } else {
 
-		global $L;
+    global $L;
+    require_once cot_langfile('forman');
 
     /* === Hook === */
 		foreach (cot_getextplugins('postlist.first') as $pl)
@@ -406,6 +407,10 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 			$topic_title = Cot::$db->query("SELECT ft_title FROM $db_forum_topics WHERE ft_id = ? LIMIT 1", $row['fp_topicid'])->fetchColumn();
 			$post_author = htmlspecialchars($row['fp_postername']);
 
+      $post_prefix = "SELECT fp_id FROM $db_forum_posts WHERE fp_topicid = " . $row['fp_topicid'] . " ORDER BY fp_creation ASC LIMIT 1";
+      $post_prefix = Cot::$db->query($post_prefix)->fetchColumn();
+      $post_prefix = ($post_prefix == $row['fp_id']) ? "" : $L['forman_re'];
+
 			$t->assign(array(
 				'PAGE_ROW_NUM'     => $jj,
 				'PAGE_ROW_ODDEVEN' => cot_build_oddeven($jj),
@@ -417,9 +422,15 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 				'PAGE_ROW_TOPIC_TITLE'	=> $topic_title,
 				'PAGE_ROW_TOPIC_URL'		=> cot_url('forums', 'm=posts&q=' . $row['fp_topicid']),
 
-				'PAGE_ROW_ID'					=> $row['fp_id'],
 				'PAGE_ROW_TOPICID'		=> $row['fp_topicid'],
 				'PAGE_ROW_CAT'				=> $row['fp_cat'],
+
+        'PAGE_ROW_PREFIX'		  => $post_prefix,
+
+        'PAGE_ROW_ID'					=> $row['fp_id'],
+        'PAGE_ROW_URL'        => cot_url('forums', 'm=posts&q=' . $row['fp_topicid'] . '&d=' . $durl, "#" . $row['fp_id']),
+        'PAGE_ROW_IDURL'      => cot_url('forums', 'm=posts&id=' . $row['fp_id']),
+
 				'PAGE_ROW_POSTERID'		=> $row['fp_posterid'],
 				'PAGE_ROW_POSTERNAME'	=> $post_author,
 				'PAGE_ROW_UPDATER'		=> $row['fp_updater'],
@@ -522,4 +533,187 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
     }
 	}
 	return $output;
+}
+
+function sedby_forman_count($area = 'topics') {
+  if ($area == 'topics') {
+		$db_forum_topics = Cot::$db->forum_topics;
+    $out = Cot::$db->countRows($db_forum_topics);
+  } elseif ($area == 'posts') {
+    $db_forum_posts = Cot::$db->forum_posts;
+    $out = Cot::$db->countRows($db_forum_posts);
+  } elseif ($area == 'users') {
+    $db_users = Cot::$db->users;
+    $out = Cot::$db->countRows($db_users);
+  }
+  return $out;
+}
+
+function sedby_forman_topusers($tpl = 'forman.topusers', $items = 0, $order = 'user_postcount DESC', $extra = '', $zerocount = 0, $offset = 0, $pagination = '', $ajax_block = '', $cache_name = '', $cache_ttl = '') {
+
+  $enableAjax = $enableCache = $enablePagination = false;
+
+  // Condition shortcut
+  if (Cot::$cache && !empty($cache_name) && ((int)$cache_ttl > 0)) {
+    $enableCache = true;
+    $cache_name = (!empty($cache_name)) ? str_replace(' ', '_', $cache_name) : '';
+  }
+
+  if ($enableCache && Cot::$cache->db->exists($cache_name, SEDBY_FORMAN_REALM)) {
+    $output = Cot::$cache->db->get($cache_name, SEDBY_FORMAN_REALM);
+  } else {
+
+    global $L, $Ls;
+    require_once cot_langfile('forman');
+
+    /* === Hook === */
+		foreach (cot_getextplugins('topusers.first') as $pl)
+    {
+			include $pl;
+		}
+		/* ===== */
+
+    // Condition shortcuts
+    if ((Cot::$cfg['turnajax']) && (Cot::$cfg['plugin']['forman']['ajax']) && !empty($ajax_block)) {
+      $enableAjax = true;
+    }
+
+    if (!empty($pagination) && ((int)$items > 0)) {
+      $enablePagination = true;
+    }
+
+    // DB tables shortcuts
+		$db_users = Cot::$db->users;
+
+    $fmax = Cot::$db->query("SELECT MAX(user_postcount) FROM $db_users")->fetchColumn();
+
+    // Display the items
+    (!isset($tpl) || empty($tpl)) && $tpl = 'forman.topusers';
+		$t = new XTemplate(cot_tplfile($tpl, 'plug'));
+
+    // Get pagination if necessary
+		if ($enablePagination) {
+      list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
+    } else {
+      $d = 0;
+    }
+
+		// Compile items number
+		((int)($offset) <= 0) && $offset = 0;
+		$d = $d + (int)$offset;
+		$sql_limit = ($items > 0) ? "LIMIT $d, $items" : "";
+
+		// Compile order
+		$sql_order = empty($order) ? "ORDER BY user_postcount DESC" : " ORDER BY $order";
+
+    // Include users with zero posts
+    $sql_zerocount = (empty($zerocount) || ($zerocount == 0)) ? "user_postcount != 0" : "";
+
+    // Compile extra
+		$sql_extra = (empty($extra)) ? "" : $extra;
+
+    $sql_cond = sedby_twocond($sql_zerocount, $sql_extra);
+
+    /* === Hook === */
+    foreach (cot_getextplugins('topusers.query') as $pl)
+    {
+      include $pl;
+    }
+    /* ===== */
+
+    $query = "SELECT user_id, user_name, user_postcount FROM $db_users $sql_cond $sql_order $sql_limit";
+    $res = Cot::$db->query($query);
+    $jj = 1;
+
+    /* === Hook - Part 1 === */
+    $extp = cot_getextplugins('topusers.loop');
+    /* ===== */
+
+    while ($row = $res->fetch()) {
+      $t->assign(cot_generate_usertags($row, 'PAGE_ROW_USER_'));
+      $t->assign(array(
+        'PAGE_ROW_NUM'     => $jj,
+        'PAGE_ROW_ODDEVEN' => cot_build_oddeven($jj),
+        'PAGE_ROW_RAW'     => $row,
+
+        'PAGE_ROW_PERCENT' => $row['user_postcount'] / $fmax * 100,
+        'PAGE_ROW_POSTS'   => cot_declension($row['user_postcount'], $L['forman_posts']),
+      ));
+
+      /* === Hook - Part 2 === */
+      foreach ($extp as $pl) {
+        include $pl;
+      }
+      /* ===== */
+
+      $t->parse("MAIN.PAGE_ROW");
+      $jj++;
+    }
+
+    // Render pagination if needed
+		if ($enablePagination) {
+			$totalitems = Cot::$db->query("SELECT user_id FROM $db_users $sql_cond")->rowCount();
+
+      $url_area = sedby_geturlarea();
+			$url_params = sedby_geturlparams();
+			$url_params[$pagination] = $durl;
+
+			if ($enableAjax) {
+				$ajax_mode = true;
+				$ajax_plug = 'plug';
+				if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls']) {
+          $h = $tpl . ',' . $items . ',' . $order . ',' . $extra . ',' . $zerocount . ',' . $offset . ',' . $pagination . ',' . $ajax_block . ',' . $cache_name . ',' . $cache_ttl . ',topusers';
+    			$h = sedby_encrypt_decrypt('encrypt', $h, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
+    			$h = str_replace('=', '', $h);
+          $ajax_plug_params = "r=forman&h=$h";
+        } else {
+          $ajax_plug_params = "r=forman&tpl=$tpl&items=$items&order=$order&extra=$extra&zerocount=$zerocount&offset=$offset&pagination=$pagination&ajax_block=$ajax_block&cache_name=$cache_name&cache_ttl=$cache_ttl&area=topusers";
+        }
+			} else {
+				$ajax_mode = false;
+				$ajax_plug = $ajax_plug_params = '';
+			}
+
+			$pagenav = cot_pagenav($url_area, $url_params, $d, $totalitems, $items, $pagination, '', $ajax_mode, $ajax_block, $ajax_plug, $ajax_plug_params);
+
+			// Assign pagination tags
+			$t->assign(array(
+				'PAGE_TOP_PAGINATION'  => $pagenav['main'],
+				'PAGE_TOP_PAGEPREV'    => $pagenav['prev'],
+				'PAGE_TOP_PAGENEXT'    => $pagenav['next'],
+				'PAGE_TOP_FIRST'       => $pagenav['first'],
+				'PAGE_TOP_LAST'        => $pagenav['last'],
+				'PAGE_TOP_CURRENTPAGE' => $pagenav['current'],
+				'PAGE_TOP_TOTALLINES'  => $totalitems,
+				'PAGE_TOP_MAXPERPAGE'  => $items,
+				'PAGE_TOP_TOTALPAGES'  => $pagenav['total']
+			));
+		}
+
+    // Assign service tags
+		if ((!$enableCache) && (Cot::$usr['maingrp'] == 5)) {
+			$t->assign(array(
+				'PAGE_TOP_QUERY' => $query,
+				'PAGE_TOP_RES' => $res,
+			));
+		}
+
+		($jj==1) && $t->parse("MAIN.NONE");
+
+		/* === Hook === */
+		foreach (cot_getextplugins('topusers.tags') as $pl)
+    {
+			include $pl;
+		}
+		/* ===== */
+
+		$t->parse();
+		$output = $t->text();
+
+		if (($jj > 1) && $enableCache && !$enablePagination) {
+      Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, $cache_ttl);
+    }
+
+  }
+  return $output;
 }

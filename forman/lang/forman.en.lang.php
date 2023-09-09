@@ -26,3 +26,12 @@ $L['info_notes'] = 'Functions for topic & post list widgets, linear forum, and f
 /**
  * Plugin Admin
  */
+
+
+
+/**
+ * Plugin Globals
+ */
+
+$L['forman_re'] = 'Re: ';
+$Ls['forman_posts'] = 'post,posts';

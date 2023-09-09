@@ -23,6 +23,24 @@
 
 		{FILE "themes/{PHP.theme}/inc/forums-help.tpl"}
 
+		<div class="row">
+  <div class="col">
+    <span class="fw-bold fs-5 mb-2 d-block">Статистика форумов</span>
+    <ul class="list-unstyled">
+			<li>
+				Сообщений: {PHP|sedby_forman_count('posts')}, тем: {PHP|sedby_forman_count('topics')}, пользователей: {PHP|sedby_forman_count('users')}
+			</li>
+			<li>
+				Последнее сообщение: {PHP|sedby_postlist('forman.postlist.basic', 1, 'fp_updated DESC')}
+			</li>
+		</ul>
+		<span class="fw-bold fs-5 mb-2 d-block">Топ авторов</span>
+		<div id="top2list">
+		{PHP|sedby_forman_topusers('forman.topusers', '0', '', '', '0', '0', '', '')}
+  	</div>
+  </div>
+</div>
+
 	</div>
 </main>
 

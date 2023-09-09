@@ -32,3 +32,6 @@ $L['info_notes'] = 'Функции для создания виджетов сп
 /**
  * Plugin Globals
  */
+
+$L['forman_re'] = 'Re: ';
+$L['forman_posts'] = 'пост,поста,постов';
