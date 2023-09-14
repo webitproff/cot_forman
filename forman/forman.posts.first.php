@@ -1,12 +1,12 @@
 <?php
 /* ====================
 [BEGIN_COT_EXT]
-Hooks=forums.posts.newpost.done,forums.editpost.update.done,forums.posts.delete.done
+Hooks=forums.posts.first
 [END_COT_EXT]
 ==================== */
 
 /**
-* Forman Plugin / Post add/delete action
+* Forman Plugin / AJAX for cot_postlist
 *
 * @package forman
 * @author Dmitri Beliavski
@@ -15,4 +15,4 @@ Hooks=forums.posts.newpost.done,forums.editpost.update.done,forums.posts.delete.
 
 defined('COT_CODE') or die('Wrong URL');
 
-Cot::$cache && Cot::$cache->clear_realm(SEDBY_FORMAN_REALM, COT_CACHE_TYPE_ALL);
+include_once cot_langfile('forman');

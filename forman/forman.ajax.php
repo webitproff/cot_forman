@@ -6,9 +6,9 @@ Hooks=ajax
 ==================== */
 
 /**
-* Comlist Plugin / AJAX
+* Forman Plugin / AJAX for cot_postlist
 *
-* @package postlist
+* @package forman
 * @author Dmitri Beliavski
 * @copyright (c) 2023 seditio.by
 */
@@ -23,7 +23,7 @@ foreach (array_merge(cot_getextplugins('forman.ajax.first')) as $pl) {
 
 if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls'] == 1) {
   $params = cot_import('h', 'G', 'TXT');
-  $params = cot_encrypt_decrypt('decrypt', $params, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
+  $params = sedby_encrypt_decrypt('decrypt', $params, Cot::$cfg['plugin']['forman']['encrypt_key'], Cot::$cfg['plugin']['forman']['encrypt_iv']);
   $params = explode(',', $params);
 
   $tpl = $params[0];
@@ -36,6 +36,7 @@ if (Cot::$cfg['plugin']['forman']['encrypt_ajax_urls'] == 1) {
   $ajax_block = $params[7];
   $cache_name = $params[8];
   $cache_ttl = $params[9];
+  $area = $params[10];
 }
 else {
   $tpl = cot_import('tpl','G','TXT');
@@ -48,9 +49,19 @@ else {
   $ajax_block = cot_import('ajax_block','G','TXT');
   $cache_name = cot_import('cache_name','G','TXT');
   $cache_ttl = cot_import('cache_ttl','G','INT');
+  $area = cot_import('area','G','TXT');
+
+  $zerocount = cot_import('zerocount','G','INT');
+  ($zerocount) && $group = $zerocount;
 }
 
 ob_clean();
-echo cot_postlist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+if ($area == 'topics') {
+  echo sedby_topiclist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+} elseif ($area == 'posts') {
+  echo sedby_postlist($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+} elseif ($area == 'topusers') {
+  echo sedby_forman_topusers($tpl, $items, $order, $extra, $group, $offset, $pagination, $ajax_block, $cache_name, $cache_ttl);
+}
 ob_flush();
 exit;

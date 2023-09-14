@@ -15,6 +15,7 @@ defined('COT_CODE') or die('Wrong URL');
 
 $L['info_name'] = '[SEDBY] Forman';
 $L['info_desc'] = 'Дополнительный функционал для форума';
+$L['info_notes'] = 'Функции для создания виджетов списков тем и постов, линейный форум и статистика для форумов.';
 
 /**
  * Plugin Config
@@ -31,3 +32,8 @@ $L['info_desc'] = 'Дополнительный функционал для фо
 /**
  * Plugin Globals
  */
+
+$L['forman_lastreply'] = 'Последний ответ от';
+$L['forman_posts'] = 'пост,поста,постов';
+$L['forman_re'] = 'Re: ';
+$L['forman_recentposts'] = 'Последние посты';
