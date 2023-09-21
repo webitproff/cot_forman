@@ -35,7 +35,7 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
   $enableAjax = $enableCache = $enablePagination = false;
 
   // Condition shortcut
-  if (Cot::$cache && !empty($cache_name) && ((int)$cache_ttl > 0)) {
+  if (Cot::$cache && !empty($cache_name) && ((int)$cache_ttl > 0) && (Cot::$usr['id'] == 0)) {
     $enableCache = true;
     $cache_name = str_replace(' ', '_', $cache_name);
   }
@@ -44,9 +44,16 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
     $output = Cot::$cache->db->get($cache_name, SEDBY_FORMAN_REALM);
   } else {
 
+    // Begin: Work on cats view permissions
+		$black_cats = sedby_black_cats();
+		if (!empty($black_cats)) {
+			$black_cats = "ft_cat NOT IN ($black_cats)";
+			$extra = empty($extra) ? $black_cats : $extra . " AND " . $black_cats;
+		}
+		// End: Work on cats view permissions
+
     /* === Hook === */
-    foreach (cot_getextplugins('topiclist.first') as $pl)
-    {
+    foreach (cot_getextplugins('topiclist.first') as $pl) {
       include $pl;
     }
     /* ===== */
@@ -95,8 +102,7 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
     $topiclist_join_tables = "";
 
     /* === Hook === */
-		foreach (cot_getextplugins('topiclist.query') as $pl)
-    {
+		foreach (cot_getextplugins('topiclist.query') as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -118,9 +124,9 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
 
       if ($row['ft_movedto'] > 0) {
     		$row['ft_url'] = cot_url('forums', "m=posts&q=".$row['ft_movedto']);
-    		$row['ft_icon_type'] = 'posts_moved';
+        $row['ft_icon_type'] = 'posts_moved';
     		$row['ft_icon'] = Cot::$R['forums_icon_posts_moved'];
-    		$row['ft_title']= Cot::$L['Moved'].": ".$row['ft_title'];
+        $row['ft_title']= Cot::$L['Moved'].": ".$row['ft_title'];
     		$row['ft_postcount'] = Cot::$R['forums_code_post_empty'];
     		$row['ft_replycount'] = Cot::$R['forums_code_post_empty'];
     		$row['ft_viewcount'] = Cot::$R['forums_code_post_empty'];
@@ -129,26 +135,21 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
     		$row['ft_lastpostlink'] = cot_rc_link($row['ft_lastposturl'], Cot::$R['icon_follow'], 'rel="nofollow"') .Cot::$L['Moved'];
       } else {
     		$row['ft_url'] = cot_url('forums', "m=posts&q=".$row['ft_id']);
-    		$row['ft_lastposturl'] = (Cot::$usr['id'] > 0 && $row['ft_updated'] > Cot::$usr['lastvisit']) ? cot_url('forums', "m=posts&q=".$row['ft_id']."&n=unread", "#unread") : cot_url('forums', "m=posts&q=".$row['ft_id']."&n=last", "#bottom");
-    		$row['ft_lastpostlink'] = cot_rc_link($row['ft_lastposturl'], Cot::$R['icon_unread'], 'rel="nofollow"').cot_date('datetime_short', $row['ft_updated']);
-
-    		$row['ft_replycount'] = $row['ft_postcount'] - 1;
-
-    		if ($row['ft_updated'] > Cot::$usr['lastvisit'] && Cot::$usr['id']>0) {
+        if ($row['ft_updated'] > Cot::$usr['lastvisit'] && Cot::$usr['id']>0) {
     			$row['ft_icon'] .= '_new';
     			$row['ft_postisnew'] = TRUE;
     		}
-
     		if ($row['ft_postcount'] >= Cot::$cfg['forums']['hottopictrigger'] && !$row['ft_state'] && !$row['ft_sticky']) {
     			$row['ft_icon'] = ($row['ft_postisnew']) ? 'posts_new_hot' : 'posts_hot';
     		} else {
     			$row['ft_icon'] .= ($row['ft_sticky']) ? '_sticky' : '';
     			$row['ft_icon'] .=  ($row['ft_state']) ? '_locked' : '';
     		}
-
     		$row['ft_icon_type'] = $row['ft_icon'];
     		$row['ft_icon'] = cot_rc('forums_icon_topic', array('icon' => $row['ft_icon']));
-    		$row['ft_lastpostername'] = cot_build_user($row['ft_lastposterid'], $row['ft_lastpostername']);
+        $row['ft_replycount'] = $row['ft_postcount'] - 1;
+    		$row['ft_lastposturl'] = (Cot::$usr['id'] > 0 && $row['ft_updated'] > Cot::$usr['lastvisit']) ? cot_url('forums', "m=posts&q=".$row['ft_id']."&n=unread", "#unread") : cot_url('forums', "m=posts&q=".$row['ft_id']."&n=last", "#bottom");
+    		$row['ft_lastpostlink'] = cot_rc_link($row['ft_lastposturl'], Cot::$R['icon_unread'], 'rel="nofollow"').cot_date('datetime_short', $row['ft_updated']);
     	}
 
       if ($row['ft_postcount'] > Cot::$cfg['forums']['maxpostsperpage'] && !$row['ft_movedto']) {
@@ -198,14 +199,16 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
         'PAGE_ROW_VIEWCOUNT' => $row['ft_viewcount'],
 
         'PAGE_ROW_FIRSTPOSTER' => cot_build_user($row['ft_firstposterid'], $row['ft_firstpostername']),
-        'PAGE_ROW_LASTPOSTER' => $row['ft_lastpostername'],
+        'PAGE_ROW_LASTPOSTER' => cot_build_user($row['ft_lastposterid'], $row['ft_lastpostername']),
+
         'PAGE_ROW_USER_POSTED' => isset($row['ft_user_posted']) ? (int) $row['ft_user_posted'] : '',
 
         'PAGE_ROW_URL' => $row['ft_url'],
 
         'PAGE_ROW_PAGES' => $row['ft_pages'],
 
-        'PAGE_ROW' => $row,
+        'PAGE_ROW_PREVIEW' => $row['ft_preview'],
+        'PAGE_ROW_PREVIEW_PLAIN' => strip_tags($row['ft_preview']),
       ));
 
       if (!empty(Cot::$extrafields[Cot::$db->forum_topics])) {
@@ -282,8 +285,7 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
     ($jj==1) && $t->parse("MAIN.NONE");
 
     /* === Hook === */
-    foreach (cot_getextplugins('topiclist.tags') as $pl)
-    {
+    foreach (cot_getextplugins('topiclist.tags') as $pl) {
       include $pl;
     }
     /* ===== */
@@ -291,7 +293,7 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
     $t->parse();
     $output = $t->text();
 
-    if (($jj > 1) && $enableCache && !$enablePagination) {
+    if ($enableCache && !$enablePagination && ($jj > 1)) {
       Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, $cache_ttl);
     }
   }
@@ -317,7 +319,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
   $enableAjax = $enableCache = $enablePagination = false;
 
   // Condition shortcut
-  if (Cot::$cache && !empty($cache_name) && ((int)$cache_ttl > 0)) {
+  if (Cot::$cache && !empty($cache_name) && ((int)$cache_ttl > 0) && (Cot::$usr['id'] == 0)) {
     $enableCache = true;
     $cache_name = (!empty($cache_name)) ? str_replace(' ', '_', $cache_name) : '';
   }
@@ -329,9 +331,16 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
     global $L;
     require_once cot_langfile('forman');
 
+    // Begin: Work on cats view permissions
+    $black_cats = sedby_black_cats();
+    if (!empty($black_cats)) {
+      $black_cats = "fp_cat NOT IN ($black_cats)";
+      $extra = empty($extra) ? $black_cats : $extra . " AND " . $black_cats;
+    }
+    // End: Work on cats view permissions
+
     /* === Hook === */
-		foreach (cot_getextplugins('postlist.first') as $pl)
-    {
+		foreach (cot_getextplugins('postlist.first') as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -387,8 +396,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 		}
 
 		/* === Hook === */
-		foreach (cot_getextplugins('postlist.query') as $pl)
-    {
+		foreach (cot_getextplugins('postlist.query') as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -521,8 +529,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 		($jj==1) && $t->parse("MAIN.NONE");
 
 		/* === Hook === */
-		foreach (cot_getextplugins('postlist.tags') as $pl)
-    {
+		foreach (cot_getextplugins('postlist.tags') as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -530,7 +537,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 		$t->parse();
 		$output = $t->text();
 
-		if (($jj > 1) && $enableCache && !$enablePagination) {
+		if ($enableCache && !$enablePagination && ($jj > 1)) {
       Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, $cache_ttl);
     }
 	}
@@ -569,8 +576,7 @@ function sedby_forman_topusers($tpl = 'forman.topusers', $items = 0, $order = 'u
     require_once cot_langfile('forman');
 
     /* === Hook === */
-		foreach (cot_getextplugins('topusers.first') as $pl)
-    {
+		foreach (cot_getextplugins('topusers.first') as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -617,8 +623,7 @@ function sedby_forman_topusers($tpl = 'forman.topusers', $items = 0, $order = 'u
     $sql_cond = sedby_twocond($sql_zerocount, $sql_extra);
 
     /* === Hook === */
-    foreach (cot_getextplugins('topusers.query') as $pl)
-    {
+    foreach (cot_getextplugins('topusers.query') as $pl) {
       include $pl;
     }
     /* ===== */
@@ -703,8 +708,7 @@ function sedby_forman_topusers($tpl = 'forman.topusers', $items = 0, $order = 'u
 		($jj==1) && $t->parse("MAIN.NONE");
 
 		/* === Hook === */
-		foreach (cot_getextplugins('topusers.tags') as $pl)
-    {
+		foreach (cot_getextplugins('topusers.tags') as $pl) {
 			include $pl;
 		}
 		/* ===== */
@@ -712,7 +716,7 @@ function sedby_forman_topusers($tpl = 'forman.topusers', $items = 0, $order = 'u
 		$t->parse();
 		$output = $t->text();
 
-		if (($jj > 1) && $enableCache && !$enablePagination) {
+		if ($enableCache && !$enablePagination && ($jj > 1)) {
       Cot::$cache->db->store($cache_name, $output, SEDBY_FORMAN_REALM, $cache_ttl);
     }
 

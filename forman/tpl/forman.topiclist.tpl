@@ -5,16 +5,16 @@
 			<tr>
 				<th class="columns_icon"></th>
 				<th>
-					Topics
+					{PHP.L.forums_topics}
 				</th>
 				<th class="text-center columns_posts_views">
-					Posts
+					{PHP.L.forums_posts}
 				</th>
 				<th class="text-center columns_posts_views">
-					Views
+					{PHP.L.Views}
 				</th>
 				<th class="text-center columns_last_post">
-					Last Post
+					{PHP.L.Lastpost}
 				</th>
 			</tr>
 		</thead>
@@ -25,14 +25,14 @@
 					{PAGE_ROW_ICON}
 				</td>
 				<td class="align-middle">
-					<a href="{PAGE_ROW_URL}" class="fw-bold lh-sm d-block">{PAGE_ROW_TITLE}</a>
+					<a href="{PAGE_ROW_URL}" class="fs-5a fw-bold lh-sm d-block">{PAGE_ROW_TITLE}</a>
 <!-- IF {PAGE_ROW_DESC} -->
 					<p class="small mb-0">
 						{PAGE_ROW_DESC}
 					</p>
 <!-- ENDIF -->
 					<p class="small text-nowrap mb-0">
-						{PAGE_ROW_CRUMBS} by {PAGE_ROW_FIRSTPOSTER} @ {PAGE_ROW_CREATIONDATE_STAMP|cot_date('H:i d.m.Y', $this)}
+						{PAGE_ROW_CRUMBS} {PHP.L.forman_by} {PAGE_ROW_FIRSTPOSTER} @ {PAGE_ROW_CREATIONDATE_STAMP|cot_date('H:i d.m.Y', $this)}
 					</p>
 				</td>
 				<td class="text-center align-middle">
