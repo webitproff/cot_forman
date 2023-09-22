@@ -365,6 +365,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 
     // Get pagination if necessary
 		if ($enablePagination) {
+      $durl = null;
       list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
     } else {
       $d = 0;
