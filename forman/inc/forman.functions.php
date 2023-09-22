@@ -420,7 +420,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
       $post_prefix = Cot::$db->query($post_prefix)->fetchColumn();
       $post_prefix = ($post_prefix == $row['fp_id']) ? "" : $L['forman_re'];
 
-      (!$durl) && $durl = null;
+      (!isset($durl)) && $durl = null;
 
 			$t->assign(array(
 				'PAGE_ROW_NUM'     => $jj,
