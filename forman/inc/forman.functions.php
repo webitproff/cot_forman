@@ -365,7 +365,6 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 
     // Get pagination if necessary
 		if ($enablePagination) {
-      $durl = null;
       list($pg, $d, $durl) = cot_import_pagenav($pagination, $items);
     } else {
       $d = 0;
@@ -420,6 +419,8 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
       $post_prefix = "SELECT fp_id FROM $db_forum_posts WHERE fp_topicid = " . $row['fp_topicid'] . " ORDER BY fp_creation ASC LIMIT 1";
       $post_prefix = Cot::$db->query($post_prefix)->fetchColumn();
       $post_prefix = ($post_prefix == $row['fp_id']) ? "" : $L['forman_re'];
+
+      (!$durl) && $durl = null;
 
 			$t->assign(array(
 				'PAGE_ROW_NUM'     => $jj,
