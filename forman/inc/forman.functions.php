@@ -90,8 +90,9 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
     // Compile order
     $sql_order = empty($order) ? "ORDER BY ft_updated DESC" : " ORDER BY $order";
 
-    // Compile group
-		$sql_group = ($group == 1) ? "ft.ft_id = (SELECT MAX(ft_id) FROM " . $db_forum_topics . " AS ft2 WHERE ft2.ft_cat = ft.ft_cat)" : '';
+    // Compile group -- void
+		// $sql_group = ($group == 1) ? "ft.ft_id = (SELECT MAX(ft_id) FROM " . $db_forum_topics . " AS ft2 WHERE ft2.ft_cat = ft.ft_cat)" : '';
+    $sql_group = "";
 
     // Compile extra SQL condition
     $sql_extra = (empty($extra)) ? "" : $extra;
@@ -422,7 +423,6 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 			$t->assign(array(
 				'PAGE_ROW_NUM'     => $jj,
 				'PAGE_ROW_ODDEVEN' => cot_build_oddeven($jj),
-				'PAGE_ROW_RAW'     => $row,
 
 				'PAGE_ROW_CAT_TITLE'	=> Cot::$structure['forums'][$row['fp_cat']]['title'],
 				'PAGE_ROW_CAT_URL'		=> cot_url('forums', 'm=topics&s=' . $row['fp_cat']),
@@ -452,6 +452,8 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 
 				'PAGE_ROW_TEXT'				=> $row['fp_text'],
 				'PAGE_ROW_TEXT_PLAIN'	=> strip_tags($row['fp_text']),
+
+				'PAGE_ROW_RAW'     => $row,
 			));
 
 			if ($row['fp_posterid'] > 0) {
