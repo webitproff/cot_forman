@@ -97,7 +97,7 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
     // Compile extra SQL condition
     $sql_extra = (empty($extra)) ? "" : $extra;
 
-    $sql_cond = sedby_twocond($sql_group, $sql_extra);
+    $sql_cond = sedby_build_where(array($sql_group, $sql_extra));
 
     $topiclist_join_columns = "";
     $topiclist_join_tables = "";
@@ -384,7 +384,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 		// Compile extra
 		$sql_extra = (empty($extra)) ? "" : $extra;
 
-    $sql_cond = sedby_twocond($sql_group, $sql_extra);
+    $sql_cond = sedby_build_where(array($sql_group, $sql_extra));
 
 		$postlist_join_columns = "";
 		$postlist_join_tables = "";
@@ -440,7 +440,8 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
         'PAGE_ROW_PREFIX'		  => $post_prefix,
 
         'PAGE_ROW_ID'					=> $row['fp_id'],
-        'PAGE_ROW_URL'        => cot_url('forums', 'm=posts&q=' . $row['fp_topicid'] . '&d=' . $durl, "#" . $row['fp_id']),
+        // 'PAGE_ROW_URL'        => cot_url('forums', 'm=posts&q=' . $row['fp_topicid'] . '&d=' . $durl, "#" . $row['fp_id']),
+        'PAGE_ROW_URL'        => cot_url('forums', 'm=posts&q=' . $row['fp_topicid'], "#" . $row['fp_id']),
         'PAGE_ROW_IDURL'      => cot_url('forums', 'm=posts&id=' . $row['fp_id']),
 
 				'PAGE_ROW_POSTERID'		=> $row['fp_posterid'],
@@ -624,7 +625,7 @@ function sedby_forman_topusers($tpl = 'forman.topusers', $items = 0, $order = 'u
     // Compile extra
 		$sql_extra = (empty($extra)) ? "" : $extra;
 
-    $sql_cond = sedby_twocond($sql_zerocount, $sql_extra);
+    $sql_cond = sedby_build_where(array($sql_zerocount, $sql_extra));
 
     /* === Hook === */
     foreach (cot_getextplugins('topusers.query') as $pl) {

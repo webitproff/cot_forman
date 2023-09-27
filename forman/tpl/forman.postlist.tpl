@@ -7,7 +7,7 @@
 		</figure>
 
 		<p class="fw-bold lh-sm mb-1">
-			<a href="{PAGE_ROW_TOPIC_URL}">{PAGE_ROW_TOPIC_TITLE}</a>
+			<a href="{PAGE_ROW_URL}">{PAGE_ROW_TOPIC_TITLE}</a>
 		</p>
 
 		<div class="text small lh-sm mb-2">
