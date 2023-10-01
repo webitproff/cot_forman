@@ -15,7 +15,7 @@ defined('COT_CODE') or die('Wrong URL');
 
 $L['info_name'] = '[SEDBY] Forman';
 $L['info_desc'] = 'Additional functionality for the forums';
-$L['info_notes'] = 'Functions for topic & post list widgets, linear forum, and forum stats.';
+$L['info_notes'] = 'Functions for topic & post list widgets, linear forum, and forum stats';
 
 /**
  * Plugin Config

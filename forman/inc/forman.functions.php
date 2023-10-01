@@ -14,7 +14,7 @@ define('SEDBY_FORMAN_REALM', '[SEDBY] Forman');
 
 require_once cot_incfile('forman', 'plug', 'rc');
 require_once cot_incfile('forums', 'module');
-require_once cot_incfile('pagelist', 'plug', 'functions.extra');
+require_once cot_incfile('cotlib', 'plug');
 
 /**
  * Generates Topic list widget
