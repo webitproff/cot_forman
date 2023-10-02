@@ -219,10 +219,10 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
           $tag = mb_strtoupper($exfld['field_name']);
           $exfld_title = cot_extrafield_title($exfld, 'forums_topic_');
           $t->assign(array(
-            'FORUMS_TOPICS_ROW_' . $tag . '_TITLE' => $exfld_title,
-            'FORUMS_TOPICS_ROW_' . $tag => cot_build_extrafields_data('forums', $exfld, $row['ft_' . $exfld['field_name']],
+            'PAGE_ROW_' . $tag . '_TITLE' => $exfld_title,
+            'PAGE_ROW_' . $tag => cot_build_extrafields_data('forums', $exfld, $row['ft_' . $exfld['field_name']],
               (Cot::$cfg['forums']['markup'] && Cot::$cfg['forums']['cat_' . $s]['allowbbcodes'])),
-            'FORUMS_TOPICS_ROW_' . $tag . '_VALUE' => $row['ft_' . $exfld['field_name']]
+            'PAGE_ROW_' . $tag . '_VALUE' => $row['ft_' . $exfld['field_name']]
           ));
         }
       }

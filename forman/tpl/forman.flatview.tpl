@@ -23,7 +23,7 @@
 					{FORMAN_FLATVIEW_TOGGLE}
 				</div>
 				<div id="topics2list">
-					{PHP|sedby_topiclist('forman.topiclist', '5', '', '', '0', '0', 'ftp', 'topics2list')}
+					{PHP|sedby_topiclist('forman.topiclist', '5', 'ft_updated DESC', '', '0', '0', 'ftp', 'topics2list')}
 				</div>
 			</div>
 		</div>
