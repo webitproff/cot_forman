@@ -185,6 +185,8 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
         'PAGE_ROW_DESC' => htmlspecialchars($row['ft_desc']),
         'PAGE_ROW_CRUMBS' => cot_breadcrumbs($ft_path, false, false),
 
+        'PAGE_ROW_PATH_SHORT' => cot_rc_link(cot_url('forums', 'm=topics&s=' . $row['ft_cat']), htmlspecialchars(Cot::$structure['forums'][$row['ft_cat']]['title'])),
+
         'PAGE_ROW_CREATIONDATE' => cot_date('datetime_short', $row['ft_creationdate']),
         'PAGE_ROW_CREATIONDATE_STAMP' => $row['ft_creationdate'],
 
