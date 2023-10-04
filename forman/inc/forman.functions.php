@@ -338,7 +338,8 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
     $black_cats = sedby_black_cats();
     if (!empty($black_cats)) {
       $black_cats = "fp_cat NOT IN ($black_cats)";
-      $extra = empty($extra) ? $black_cats : $extra . " AND " . $black_cats;
+    } else {
+      $black_cats = "";
     }
     // End: Work on cats view permissions
 
@@ -386,7 +387,7 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 		// Compile extra
 		$sql_extra = (empty($extra)) ? "" : $extra;
 
-    $sql_cond = sedby_build_where(array($sql_group, $sql_extra));
+    $sql_cond = sedby_build_where(array($sql_group, $black_cats, $sql_extra));
 
 		$postlist_join_columns = "";
 		$postlist_join_tables = "";
