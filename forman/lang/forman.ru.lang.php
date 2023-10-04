@@ -31,6 +31,8 @@ $L['info_notes'] = 'Функции для создания виджетов сп
 
  $L['cfg_gentags'] = 'Генерация тегов:';
  $L['cfg_usertags'] = 'Создавать теги для модуля Users';
+ $L['cfg_thanks'] = 'Создавать теги для плагина Thanks';
+ $L['cfg_thanks_hint'] = 'Только функция sedby_postlist()';
 
  $L['cfg_misc'] = 'Разное:';
  $L['cfg_flatview'] = 'Линейный вид форумов';

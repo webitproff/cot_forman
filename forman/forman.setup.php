@@ -29,6 +29,7 @@ encrypt_iv=04:string::1234567890123456:Initialization Vector
 
 gentags=10:separator:::
 usertags=11:radio::0:Generate User tags
+thanks=12:radio::0:Generate Thanks tags
 
 misc=20:separator:::
 flatview=21:radio::0:Flatview forums sections page
