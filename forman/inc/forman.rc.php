@@ -1,4 +1,4 @@
-<?
+<?php
 /* ====================
 [BEGIN_COT_EXT]
 Hooks=rc
@@ -20,4 +20,4 @@ $R['forman_avatar'] = '<img src="{$src}" alt="{$user}" class="avatar img-fluid" 
 $R['forman_default_avatar'] = '<img src="datas/defaultav/default.png" alt="'.$L['Avatar'].'" class="avatar img-fluid" />';
 
 // Post Status
-$R['post_update_status'] = '<span class="text-lowercase ms-2">({$status})</span>';
+$R['post_update_status'] = '<span class="text-lowercase ms-1">({$status})</span>';

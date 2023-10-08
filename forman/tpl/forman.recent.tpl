@@ -21,16 +21,16 @@
 			</div>
 			<div class="col-lg-4">
 				<div class="block mb-3 px-4 py-3 bg-light bg-gradient border rounded">
-					<span class="fw-bold fs-5 mb-2 d-block">Топ авторов</span>
+					<span class="fw-bold fs-5 mb-2 d-block">{PHP.L.forman_topauthors}</span>
 					<div id="top2list">
 						{PHP|sedby_forman_topusers('forman.topusers.short', '0', '', '', '0', '0', '', '')}
 					</div>
 				</div>
 				<div class="block px-4 py-3 bg-light bg-gradient border rounded">
-					<span class="fw-bold fs-5 mb-2 d-block">Статистика форумов</span>
+					<span class="fw-bold fs-5 mb-2 d-block">{PHP.L.forman_forumstats}</span>
 					<ul class="list-unstyled mb-0">
 						<li>
-							Сообщений: {PHP|sedby_forman_count('posts')}, тем: {PHP|sedby_forman_count('topics')}, пользователей: {PHP|sedby_forman_count('users')}
+							{PHP.L.forums_posts}: {PHP|sedby_forman_count('posts')}, <span class="text-lowercase">{PHP.L.forums_topics}:</span> {PHP|sedby_forman_count('topics')}, <span class="text-lowercase">{PHP.L.Users}:</span> {PHP|sedby_forman_count('users')}
 						</li>
 					</ul>
 				</div>
