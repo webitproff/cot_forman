@@ -1,7 +1,7 @@
 <!-- BEGIN: MAIN -->
 <ul class="list-unstyled posts">
 <!-- BEGIN: PAGE_ROW -->
-	<li class="{PAGE_ROW_ODDEVEN} px-3 py-2">
+	<li class="{PAGE_ROW_ODDEVEN} px-3 py-2 overflow-hidden">
 		<figure class="me-3 mb-1 float-start">
 			{PAGE_ROW_USER_AVATAR}
 		</figure>
