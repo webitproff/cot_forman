@@ -237,6 +237,8 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
       $jj++;
     };
 
+    ($jj == 1) && $t->parse("MAIN.NO_ROW");
+
     // Render pagination if needed
 		if ($enablePagination) {
 			$totalitems = Cot::$db->query("SELECT ft.* FROM $db_forum_topics AS ft $sql_cond")->rowCount();
@@ -284,8 +286,6 @@ function sedby_topiclist($tpl = 'forman.topiclist', $items = 0, $order = '', $ex
         'PAGE_TOP_RES' => $res,
       ));
     }
-
-    ($jj==1) && $t->parse("MAIN.NONE");
 
     /* === Hook === */
     foreach (cot_getextplugins('topiclist.tags') as $pl) {
@@ -486,6 +486,8 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 			$jj++;
 		}
 
+    ($jj == 1) && $t->parse("MAIN.NO_ROW");
+
 		// Render pagination if needed
 		if ($enablePagination) {
 			$totalitems = Cot::$db->query("SELECT fp.* FROM $db_forum_posts AS fp $sql_cond")->rowCount();
@@ -533,8 +535,6 @@ function sedby_postlist($tpl = 'forman.postlist', $items = 0, $order = '', $extr
 				'PAGE_TOP_RES' => $res,
 			));
 		}
-
-		($jj==1) && $t->parse("MAIN.NONE");
 
 		/* === Hook === */
 		foreach (cot_getextplugins('postlist.tags') as $pl) {
